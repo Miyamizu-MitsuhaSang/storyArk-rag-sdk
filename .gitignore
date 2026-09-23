@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test, coverage, and type-check caches
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+build/
+dist/
+
+# Local IDE/editor state
+.idea/
+.vscode/
+
+# Browser automation/debug output
+.playwright-cli/
+output/
+
+# Non-SDK local/reference artifacts
+docs/
+examples/
+tutorial/
+app/
+
+# Local environment and OS files
+.env
+.env.*
+.DS_Store
