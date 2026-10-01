@@ -24,6 +24,9 @@ QueryMatrix::QueryMatrix(const std::vector<std::pair<int, double>>& entries, int
         if (!seen.insert(term_id).second) {
             throw std::invalid_argument("query vectors must not contain duplicate feature ids");
         }
+        if (value < 0.0) {
+            throw std::invalid_argument("query vector weights must be non-negative");
+        }
         if (value != 0.0) {
             query_.push_back({term_id, value});
         }

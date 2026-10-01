@@ -26,14 +26,14 @@ python -m pip install "git+https://github.com/Miyamizu-MitsuhaSang/storyArk-rag-
 
 ## 使用方式
 
-稀疏向量使用 `(feature_id, weight)` 列表表示；`feature_id` 必须位于 `[0, num_features)`，同一个向量中不能重复。`num_features` 和 `top_k` 都必须大于 0。
+稀疏向量使用 `(feature_id, weight)` 列表表示；`feature_id` 必须位于 `[0, num_features)`，同一个向量中不能重复，权重必须为非负数。`num_features` 和 `top_k` 都必须大于 0。`top_k` 属于查询参数，省略时默认为 5；候选 threshold 属于索引参数，默认值为 `0.0`，无需每次搜索重复传入。提高 threshold 可能减少延迟，但会漏掉由多个低权重特征累积得到的候选。
 
 ### 直接使用索引
 
 ```python
 from translate_manager_rag import TopKMipsIndex
 
-index = TopKMipsIndex()
+index = TopKMipsIndex(candidate_threshold=0.0)
 index.build(
     rows=[
         [(0, 1.0), (2, 0.5)],
@@ -53,7 +53,7 @@ print(results)
 ```python
 from translate_manager_rag import SparseMipsRetriever
 
-retriever = SparseMipsRetriever()
+retriever = SparseMipsRetriever(candidate_threshold=0.0)
 retriever.build(
     documents=[
         {"id": "doc-a", "text": "alpha"},
@@ -72,6 +72,23 @@ print(results)
 ```
 
 `documents` 与 `vectors` 必须一一对应。每个结果保留对应文档的字段，并附加 `score`（内积得分）和 `row`（索引中的行号）。
+
+### 持久化索引
+
+`TopKMipsIndex` 和 `SparseMipsRetriever` 提供 `serialize() -> bytes` 与 `deserialize(payload)`。格式包含魔数、格式版本、尺寸元数据和 SHA-256 校验；反序列化只接受 JSON 可表示的文档 metadata，并从稀疏行重新构建 native 索引，不使用 pickle。
+
+```python
+from pathlib import Path
+from translate_manager_rag import SparseMipsRetriever
+
+payload = retriever.serialize()
+Path("index.rag").write_bytes(payload)
+
+restored = SparseMipsRetriever.deserialize(Path("index.rag").read_bytes())
+results = restored.search(query=[(1, 1.0)], top_k=1)
+```
+
+只有完成 `build()` 的索引或 retriever 才能序列化。损坏、截断或格式版本不兼容的 payload 会抛出 `ValueError`；格式不是跨版本任意兼容的承诺，升级 SDK 后应在应用层校验自己的向量化器版本。
 
 ## 本地开发与测试
 

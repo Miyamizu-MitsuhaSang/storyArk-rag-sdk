@@ -19,7 +19,7 @@ using SparseVector = std::vector<std::pair<int, double>>;
 
 class SparseMipsIndex {
 public:
-    SparseMipsIndex();
+    explicit SparseMipsIndex(double candidate_threshold = 0.0);
 
     void build(const std::vector<SparseVector>& rows, int num_features);
     std::vector<ScoredResult> search(const SparseVector& query, int top_k) const;
@@ -28,11 +28,13 @@ public:
     bool is_built() const;
     int rows() const;
     int features() const;
+    double candidate_threshold() const;
 
 private:
     internal::CSRMatrix matrix_;
     internal::InvertedIndex inverted_index_;
     int num_features_;
+    double candidate_threshold_;
     bool built_;
 
     static std::vector<ScoredResult> sort_results(const std::vector<internal::Matrix>& heap_results);

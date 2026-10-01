@@ -57,6 +57,9 @@ CSRMatrix CSRMatrix::from_sparse_rows(const std::vector<SparseVector>& rows, int
             if (!seen.insert(feature_id).second) {
                 throw std::invalid_argument("sparse vectors must not contain duplicate feature ids");
             }
+            if (value < 0.0) {
+                throw std::invalid_argument("sparse vector weights must be non-negative");
+            }
             if (value != 0.0) {
                 normalized.push_back({feature_id, value});
             }

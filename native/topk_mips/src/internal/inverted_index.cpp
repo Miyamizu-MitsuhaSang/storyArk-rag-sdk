@@ -108,7 +108,7 @@ std::unordered_set<int> InvertedIndex::filter_by_threshold(const QueryMatrix& qu
     return candidates;
 }
 
-SortableList InvertedIndex::candidate_calculator(const QueryMatrix& query, int topk) const {
+SortableList InvertedIndex::candidate_calculator(const QueryMatrix& query, int topk, double value_threshold) const {
     std::vector<Query> sorted_query = query.getquery();
     std::sort(sorted_query.begin(), sorted_query.end(), [](const Query& a, const Query& b) {
         return a.value > b.value;
@@ -122,7 +122,7 @@ SortableList InvertedIndex::candidate_calculator(const QueryMatrix& query, int t
         total_max += max_contributions[i];
     }
 
-    std::unordered_set<int> candidates = filter_by_threshold(query, VALUE_THRESHOLD);
+    std::unordered_set<int> candidates = filter_by_threshold(query, value_threshold);
 
     SortableList candidate_heap{topk};
     double min_product = -1.0;

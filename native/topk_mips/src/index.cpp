@@ -1,6 +1,7 @@
 #include "topk_mips/index.h"
 
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 #include "topk_mips/internal/heap_sort.h"
@@ -8,7 +9,12 @@
 
 namespace topk_mips {
 
-SparseMipsIndex::SparseMipsIndex() : num_features_(0), built_(false) {}
+SparseMipsIndex::SparseMipsIndex(double candidate_threshold)
+    : num_features_(0), candidate_threshold_(candidate_threshold), built_(false) {
+    if (!std::isfinite(candidate_threshold_) || candidate_threshold_ < 0.0) {
+        throw std::invalid_argument("candidate_threshold must be a finite non-negative number");
+    }
+}
 
 void SparseMipsIndex::build(const std::vector<SparseVector>& rows, int num_features) {
     if (num_features <= 0) {
@@ -34,7 +40,7 @@ std::vector<ScoredResult> SparseMipsIndex::search(const SparseVector& query, int
         return {};
     }
 
-    internal::SortableList candidates = inverted_index_.candidate_calculator(query_matrix, top_k);
+    internal::SortableList candidates = inverted_index_.candidate_calculator(query_matrix, top_k, candidate_threshold_);
     return sort_results(candidates.get_list());
 }
 
@@ -55,6 +61,10 @@ int SparseMipsIndex::rows() const {
 
 int SparseMipsIndex::features() const {
     return num_features_;
+}
+
+double SparseMipsIndex::candidate_threshold() const {
+    return candidate_threshold_;
 }
 
 std::vector<ScoredResult> SparseMipsIndex::sort_results(const std::vector<internal::Matrix>& heap_results) {

@@ -27,12 +27,10 @@ public:
     int get_features() const;
     const std::unordered_map<int, std::vector<Posting>>& get_index() const;
 
-    SortableList candidate_calculator(const QueryMatrix& query, int topk) const;
+    SortableList candidate_calculator(const QueryMatrix& query, int topk, double value_threshold) const;
     void clear();
 
 private:
-    static constexpr double VALUE_THRESHOLD = 0.1;
-
     std::unordered_map<int, std::vector<Posting>> index_;
     std::unordered_map<int, double> max_posting_value_;
     int num_vectors_;

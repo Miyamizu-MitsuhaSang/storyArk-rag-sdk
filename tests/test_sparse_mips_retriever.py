@@ -1,6 +1,13 @@
 from translate_manager_rag import SparseMipsRetriever
 
 
+def test_retriever_uses_index_threshold_and_default_top_k():
+    retriever = SparseMipsRetriever(candidate_threshold=0.0)
+    retriever.build(documents=[{"id": "doc-a"}], vectors=[[(0, 1.0)]], num_features=1)
+    assert retriever.candidate_threshold == 0.0
+    assert retriever.search(query=[(0, 1.0)]) == [{"id": "doc-a", "score": 1.0, "row": 0}]
+
+
 def test_retriever_returns_metadata_with_scores():
     retriever = SparseMipsRetriever()
     retriever.build(
