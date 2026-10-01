@@ -53,7 +53,7 @@ class TopKMipsIndex:
         rows = value.get("rows")
         num_features = value.get("num_features")
         threshold = value.get("candidate_threshold")
-        if not isinstance(rows, list) or not isinstance(num_features, int) or num_features < 1:
+        if not isinstance(rows, list) or type(num_features) is not int or num_features < 1:
             raise ValueError("invalid serialized index dimensions")
         if value.get("row_count") != len(rows) or value.get("feature_count") != num_features:
             raise ValueError("serialized index dimensions do not match payload")

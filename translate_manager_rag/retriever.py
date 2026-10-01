@@ -71,6 +71,18 @@ class SparseMipsRetriever:
     def candidate_threshold(self) -> float:
         return self._index.candidate_threshold
 
+    @property
+    def is_built(self) -> bool:
+        return self._index.is_built
+
+    @property
+    def row_count(self) -> int:
+        return self._index.row_count
+
+    @property
+    def feature_count(self) -> int:
+        return self._index.feature_count
+
     def clear(self) -> None:
         self._documents = []
         self._index.clear()

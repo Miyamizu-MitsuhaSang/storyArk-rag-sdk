@@ -33,6 +33,9 @@ def test_sparse_retriever_round_trips_documents_and_search_results():
 
     restored = SparseMipsRetriever.deserialize(original.serialize())
 
+    assert restored.is_built
+    assert restored.row_count == 2
+    assert restored.feature_count == 2
     assert restored.search([(1, 1.0)], top_k=1) == original.search([(1, 1.0)], top_k=1)
 
 
